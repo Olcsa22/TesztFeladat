@@ -1,0 +1,14 @@
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div th:replace="fragments :: html_head"></div>
+<body>
+<h3 th:text="${loggedInAs.username}">Üdvözlünk Felhasználó!</h3>
+<h3>Szerepköreid:</h3>
+<div th:each="role : ${loggedInAs.roles}">
+    <h4 th:text="${role.name}">Szerepkör</h4>
+</div>
+<h3>Utoljára belépve: </h3>
+<div th:if="${lastLoggedIn!=null}">
+<h4 th:text="${lastLoggedIn}"></h4>
+</div>
+</body>

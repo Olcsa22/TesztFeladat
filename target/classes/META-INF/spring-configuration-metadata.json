@@ -1,0 +1,22 @@
+{
+  "groups": [
+    {
+      "name": "google.recaptcha.key",
+      "type": "hu.oliver.tesztfeladatweblap.Model.Captcha",
+      "sourceType": "hu.oliver.tesztfeladatweblap.Model.Captcha"
+    }
+  ],
+  "properties": [
+    {
+      "name": "google.recaptcha.key.secret",
+      "type": "java.lang.String",
+      "sourceType": "hu.oliver.tesztfeladatweblap.Model.Captcha"
+    },
+    {
+      "name": "google.recaptcha.key.site",
+      "type": "java.lang.String",
+      "sourceType": "hu.oliver.tesztfeladatweblap.Model.Captcha"
+    }
+  ],
+  "hints": []
+}

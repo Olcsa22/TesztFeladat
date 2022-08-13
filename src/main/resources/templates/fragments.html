@@ -1,0 +1,21 @@
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div th:fragment="html_head">
+    <head>
+        <meta charset="UTF-8">
+        <link th:href="@{css/styles.css}" rel="stylesheet"></link>
+        <link rel="stylesheet" th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css}"/>
+
+    </head>
+    <header>
+        <div class="topnav">
+            <a href="/home">Főoldal</a>
+            <a href="/contentcreators" sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_TARTALOMSZERKESZTO')">Tartalomszerkesztők aloldala</a>
+            <a href="/loggedin" sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_BEJELENTKEZETT_FELHASZNALO')">Bejelentkezett felhasználó aloldala</a>
+            <a href="/admin" sec:authorize="hasRole('ROLE_ADMIN')">Admin oldala</a>
+            <a href="/logout">Kilépés</a>
+        </div>
+    </header>
+</div>
+
+

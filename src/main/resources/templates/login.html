@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
-    <title>Login page</title>
+    <title>Bejelentkezés</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
+    <meta charset="UTF-8">
+    <link href="../static/css/styles.css" rel="stylesheet" th:href="@{css/styles.css}">
 
   </head>
   <body>
-    <h1>Login page</h1>
+    <nav>
+    <h1>Bejelentkezés</h1>
+    </nav>
+    
     <form th:action="@{/captchaLogin}" th:onsubmit="mySubmitFunction(event)" method="post" id="captchaForm" th:if="${session.captchaUser!=null}">
-      <label for="username">Username</label>:
+      <p th:if="${session.loginError}" th:text=${session.loginError}>Hibás felhasználónév, vagy jelszó</p>
+      <label for="username">Felhasználónév</label>:
       <input type="text" id="username" name="username" autofocus="autofocus" /> <br />
-      <label for="password">Password</label>:
+      <label for="password">Jelszó</label>:
       <input type="password" id="password" name="password" /> <br />
       <div class="row">
         <div class="col-2"> Validate reCAPTCHA</div>
@@ -22,21 +27,23 @@
       </div>
 
       <br/>
-      <input type="submit" value="Log in" />
+      <input type="submit" value="Bejelentkezés" />
     </form>
 
+    
     <form th:action="@{/login}" method="post" th:if="${session.captchaUser==null}">
-      <label for="username">Username</label>:
+      <p th:if="${loginError}" th:text=${loginError}>Hibás felhasználónév, vagy jelszó</p>
+      <label for="username">Felhasználónév</label>:
       <input type="text" id="username" name="username" autofocus="autofocus" /> <br />
-      <label for="password">Password</label>:
+      <label for="password">Jelszó</label>:
       <input type="password" id="password" name="password" /> <br />
       <br/>
-      <input type="submit" value="Log in" />
+      <input type="submit" value="Bejelentkezés" />
     </form>
     </div>
 
     <form th:action="@{/}" method="get">
-      <input type="submit" value="főoldal">
+      <input type="submit" value="Főoldal">
     </form>
 
     <script th:src="@{/js/scripts.js}" type="text/javascript"></script>

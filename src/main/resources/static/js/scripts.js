@@ -1,6 +1,6 @@
 async function mySubmitFunction(e) {
     e.preventDefault();
-    
+
     if(grecaptcha.getResponse().length == 0){
         alert("Teljesítst a captcha verifikációt!")
     }else {

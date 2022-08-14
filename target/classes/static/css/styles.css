@@ -22,3 +22,37 @@
     background-color: #04AA6D;
     color: white;
   }
+
+  .two-sided-div{
+    display: flex;
+    justify-content: center;
+
+  }
+
+form{
+  margin-top: 5%;
+}
+
+  .centered-vertically{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10%;
+    padding: 10px;
+  }
+
+  .h-style{
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-family: "Arial Black";
+  }
+
+  nav{
+    background-color: black;
+  }
+
+  nav h1{
+    color: wheat;
+  }

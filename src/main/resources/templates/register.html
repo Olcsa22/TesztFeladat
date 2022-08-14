@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
-    <title>Register page</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link href="../static/css/styles.css" rel="stylesheet" th:href="@{css/styles.css}">
+    <title>Regisztráció</title>
   </head>
   <body>
-    <h1>Register page</h1>
-    <p th:if="${loginError}" class="error">Wrong user or password</p>
+    <nav><h1>Regisztráció</h1></nav>
+    <p th:if="${registerError}" th:text=${registerError}>Hibás felhasználónév, vagy jelszó</p>
     <form th:action="@{/registerUser}" th:object="${user}" method="post">
-      <label for="username">Username</label>:
+      <label for="username">Felhasználónév</label>:
       <input type="text" th:field="*{username}" id="username" name="username" autofocus="autofocus" /> <br />
-      <label for="password">Password</label>:
+      <label for="password">Jelszó</label>:
       <input type="password" th:field="*{password}" id="password" name="password" /> <br />
       <button type="submit">Regisztráció</button>
     </form>
     <br>
     <form th:action="@{/}" method="get">
-      <input type="submit" value="főoldal">
+      <input type="submit" value="Főoldal">
     </form>
     
   </body>

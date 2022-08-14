@@ -64,6 +64,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/captchaLogin").permitAll()
                 .antMatchers("/").permitAll()
                 .antMatchers("/js/scripts.js").permitAll()
+                .antMatchers("/css/styles.css").permitAll()
                 .antMatchers("/resources/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -86,14 +87,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         User loggedIn = userRepository.findUserByUsername(username);
                         Timestamp lastLoggedIn = loggedIn.getLastLoggedIn();
 
-
                         if(lastLoggedIn!=null) {
                             httpSession.setAttribute("lastLoggedIn",lastLoggedIn);
-                            Date date = new Date(System.currentTimeMillis());
-                            loggedIn.setLastLoggedIn(new Timestamp(date.getTime()));
-                            userRepository.save(loggedIn);
                         }
 
+                        Date date = new Date(System.currentTimeMillis());
+                        loggedIn.setLastLoggedIn(new Timestamp(date.getTime()));
+                        userRepository.save(loggedIn);
                         httpSession.setAttribute("loggedInAs",loggedIn);
                         log.info("Sikeres bejelentkezés: "+loggedIn.getUsername());
                         response.sendRedirect(request.getContextPath());
@@ -112,6 +112,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                 httpSession.setAttribute("captchaUser", true);
                             }
                         }
+                        httpSession.setAttribute("loginError","Hibás felhasználónév, vagy jelszó!");
                         log.error("Sikertelen bejelentkezés");
                         log.warn("Sikertelen bejelentkezések száma: "+httpSession.getAttribute("trynum"));
                         response.sendRedirect("/login");

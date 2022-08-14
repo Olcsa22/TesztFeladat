@@ -121,13 +121,14 @@ public class HomeController {
     }
 
     @PostMapping(value = "/registerUser")
-    public String registerUser(@ModelAttribute User user){
+    public String registerUser(@ModelAttribute User user, Model model){
        if(userService.register(user)){
            log.info("Sikeres regisztráció: "+user.getUsername());
            return "login";
        }else{
            log.info("Sikertelen regisztráció: "+user.getUsername());
-           return "login";
+           model.addAttribute("registerError","Már létezik ilyen felhasználó");
+           return "register";
        }
     }
 

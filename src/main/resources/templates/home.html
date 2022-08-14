@@ -1,13 +1,14 @@
 <html xmlns:th="http://www.thymeleaf.org" >
 <div th:replace="fragments :: html_head"></div>
 <body>
+<h3>Felhasználó:</h3>
 <h3 th:text="${session.loggedInAs.username}">Üdvözlünk Felhasználó!</h3>
 <h3>Szerepköreid:</h3>
 <div th:each="role : ${session.loggedInAs.roles}">
     <h4 th:text="${role.name}">Szerepkör</h4>
 </div>
-<h3>Utoljára belépve: </h3>
 <div th:if="${session.lastLoggedIn!=null}">
+<h3>Utoljára belépve: </h3>
 <h4 th:text="${session.lastLoggedIn}"></h4>
 </div>
 </body>

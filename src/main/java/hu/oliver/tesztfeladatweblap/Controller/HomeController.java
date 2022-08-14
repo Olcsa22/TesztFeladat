@@ -88,6 +88,7 @@ public class HomeController {
             log.info("Sikeres bejelentkezés: "+loggedIn.getUsername());
             return new ResponseEntity(true, HttpStatus.OK);
         }else{
+            log.error("Sikertelen bejelentkezés");
             return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
     }

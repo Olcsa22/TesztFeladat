@@ -3,12 +3,15 @@ package hu.oliver.tesztfeladatweblap.Controller;
 import cn.apiclub.captcha.Captcha;
 import hu.oliver.tesztfeladatweblap.Model.SpringSessionAttributes;
 import hu.oliver.tesztfeladatweblap.Repository.SpringSessionAttributesRepository;
+import hu.oliver.tesztfeladatweblap.Security.SecurityConfiguration;
 import hu.oliver.tesztfeladatweblap.Service.CaptchaValidator;
 import hu.oliver.tesztfeladatweblap.Service.UserService;
 import hu.oliver.tesztfeladatweblap.Model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,16 +21,21 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.www.BasicAuthenticationConverter;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.extras.springsecurity5.util.SpringSecurityContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Base64;
 import java.util.Collection;
@@ -48,52 +56,45 @@ public class HomeController {
     FindByIndexNameSessionRepository<? extends Session> sessions;
 
 
-    @GetMapping("/loginUser")
-    public String login(Principal principal, Model model){
+    @GetMapping("/login")
+    public String login(){
         if(isAuthenticated()){
-            updateLoggedIn(principal,model);
             return "home";
         }else {
             return "login";
         }
     }
 
-    @GetMapping("/login-error")
-    public String loginError(HttpServletRequest request, Model model) {
-        HttpSession httpSession = request.getSession();
-        if(httpSession.getAttribute("trynum")==null){
-            httpSession.setAttribute("trynum",1);
-        }else{
-            httpSession.setAttribute("trynum",(int) httpSession.getAttribute("trynum")+1);
-            if((int) httpSession.getAttribute("trynum")>=3){
-
-                model.addAttribute("captchaUser", true);
-            }
-        }
-        log.warn("Sikertelen bejelentkezések száma: "+httpSession.getAttribute("trynum"));
-        return "login";
-    }
 
     @PostMapping("/captchaLogin")
-    public void captchaLogin(@ModelAttribute User captchaUser,
-                      @RequestParam("g-recaptcha-response") String captcha, HttpServletRequest req){
-        if(validator.isValidCaptcha(captcha) && captchaUser.getPassword()!= null && captchaUser.getUsername()!=null
-        && !captchaUser.getUsername().equals("null") && !captchaUser.getPassword().equals("null")){
-            UsernamePasswordAuthenticationToken authenticationToken = this.authenticationConverter.convert(req);
+    public ResponseEntity captchaLogin(@RequestBody String captcha,
+                                       HttpServletRequest request,
+                                       HttpServletResponse response) throws IOException {
+        if(validator.isValidCaptcha(captcha)){
+            UsernamePasswordAuthenticationToken authenticationToken = authenticationConverter.convert(request);
             Authentication authResult;
             authResult = this.authenticationManager.authenticate(authenticationToken);
-
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(authResult);
             SecurityContextHolder.setContext(context);
+
+            HttpSession httpSession = request.getSession();
+            UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            User loggedIn = userService.findLoggedInuser(username);
+
+            userService.updateLastLoggedIn(loggedIn,httpSession);
+            httpSession.setAttribute("loggedInAs",loggedIn);
+            log.info("Sikeres bejelentkezés: "+loggedIn.getUsername());
+            return new ResponseEntity(true, HttpStatus.OK);
+        }else{
+            return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/register")
     public String register(Principal principal,Model model){
         if(isAuthenticated()){
-            updateLoggedIn(principal,model);
-            //model.addAttribute("loggedInAs",userService.findLoggedInuser(SecurityContextHolder.getContext().getAuthentication().getName()));
             return "home";
         }else {
             model.addAttribute("user", new User());
@@ -102,13 +103,16 @@ public class HomeController {
     }
 
     @GetMapping("/home")
-    public String home(Principal principal,Model model){
-        updateLoggedIn(principal,model);
-        return "home";
+    public String home(){
+        if(isAuthenticated()) {
+            return "home";
+        }else{
+            return "login";
+        }
     }
 
     @GetMapping
-    public String indexPage(Principal principal, Model model){
+    public String indexPage(){
         if(isAuthenticated()){
             return "home";
         }else {
@@ -153,17 +157,6 @@ public class HomeController {
             return false;
         }
         return authentication.isAuthenticated();
-    }
-
-    private void updateLoggedIn(Principal principal, Model model){
-
-        User loggedIn = userService.findLoggedInuser(principal.getName());
-        Timestamp lastLoggedIn = loggedIn.getLastLoggedIn();
-        if(model.getAttribute("lastLoggedIn")==null) {
-            model.addAttribute("lastLoggedIn", lastLoggedIn);
-            model.addAttribute("loggedInAs", loggedIn);
-        }
-        userService.updateLastLoggedIn(loggedIn);
     }
 
 

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -45,10 +46,16 @@ public class UserService {
         return userRepository.findUserByUsername(username);
     }
 
-    public void updateLastLoggedIn(User user){
-        Date date = new Date(System.currentTimeMillis());
-        user.setLastLoggedIn(new Timestamp(date.getTime()));
-        userRepository.save(user);
+    public void updateLastLoggedIn(User loggedIn, HttpSession httpSession){
+        Timestamp lastLoggedIn = loggedIn.getLastLoggedIn();
+
+
+        if(lastLoggedIn!=null) {
+            httpSession.setAttribute("lastLoggedIn",lastLoggedIn);
+            Date date = new Date(System.currentTimeMillis());
+            loggedIn.setLastLoggedIn(new Timestamp(date.getTime()));
+            userRepository.save(loggedIn);
+        }
     }
 
 }
